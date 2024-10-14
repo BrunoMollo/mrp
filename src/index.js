@@ -23,7 +23,7 @@
  * @param {Input} input - The input data containing availability, requirements, and other stock-related details.
  * @returns {Output[]} - An array of output objects representing weekly projections and requirements.
  */
-export function process_line(input) {
+export function processData(input) {
 	const table = [];
 
 	const { weeks, gross_requirements, programed_recepcions, batch_size, wait_time_weeks } = input;
