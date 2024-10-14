@@ -1,54 +1,47 @@
-export type MasterMaterialLine = {
-	element: string;
+export type Input = {
 	availbility: number;
 	wait_time_weeks: number;
 	batch_size: null | number;
-	programed_recepcions: {
-		week: number;
-		amount: number;
-	}[];
 	security_stock: number;
-	gross_requirements: { week: number; amount: number }[];
+	weeks: number;
+	programed_recepcions: number[];
+	gross_requirements: number[];
 };
 
-export type ElemntTableLine = {
+export type Output = {
 	week: number;
 	gross_requirement: number;
-	programed_recepcions: number;
+	programed_recepcion: number;
 	availbility_proyection: number;
 	net_requirement: number;
 	planned_release_of_the_order: number;
 };
 
-export function process_line(
-	x: MasterMaterialLine,
-	gross_requirements: { week: number; amount: number }[],
-	weeks: number
-) {
+export function process_line(input: Input): Output[] {
 	//TODO: rm partial
-	const table: ElemntTableLine[] = [];
+	const table = [] as Output[];
 
-	let availbility_proyection = x.availbility;
+	const { weeks, gross_requirements, programed_recepcions, batch_size, wait_time_weeks } = input;
+	let availbility_proyection = input.availbility;
 
 	for (let i = 1; i <= weeks; i++) {
-		const gross_requirement = gross_requirements.find((x) => x.week === i)?.amount ?? 0;
-		const programed_recepcions = x.programed_recepcions.find((x) => x.week === i)?.amount ?? 0;
+		const gross_requirement = gross_requirements[i - 1];
+		const programed_recepcion = programed_recepcions[i - 1];
 
-		availbility_proyection += programed_recepcions;
+		availbility_proyection += programed_recepcion;
 		availbility_proyection -= gross_requirement;
 
 		const net_requirement = availbility_proyection < 0 ? -availbility_proyection : 0;
 
 		if (availbility_proyection < 0) {
-			const request = x.batch_size === null ? net_requirement : x.batch_size;
-			table[i - x.wait_time_weeks - 1].planned_release_of_the_order = request;
+			const request = batch_size === null ? net_requirement : batch_size;
+			table[i - wait_time_weeks - 1].planned_release_of_the_order = request;
 			availbility_proyection += request;
 		}
-
 		table.push({
 			week: i,
 			gross_requirement,
-			programed_recepcions,
+			programed_recepcion,
 			availbility_proyection,
 			net_requirement,
 			planned_release_of_the_order: 0
