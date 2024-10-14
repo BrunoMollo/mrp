@@ -1,4 +1,4 @@
-import { process_line, type ElemntTableLine, type MasterMaterialLine } from '$lib';
+import { process_line, type ElemntTableLine, type MasterMaterialLine } from './index';
 import { describe, expect, test } from 'vitest';
 
 describe('process_line: small details', () => {
@@ -8,7 +8,7 @@ describe('process_line: small details', () => {
 				element: 'A',
 				availbility: 75,
 				wait_time_weeks: 1,
-				batch_size: 'Batch to Batch',
+				batch_size: null,
 				programed_recepcions: [{ week: 1, amount: 50 }],
 				security_stock: 0
 			}
