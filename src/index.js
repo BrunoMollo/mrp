@@ -44,10 +44,14 @@ export function processData(input) {
 		availbility_proyection -= gross_requirement;
 
 		const net_requirement =
-			availbility_proyection < security_stock ? security_stock - availbility_proyection : 0;
+			availbility_proyection <= security_stock ? security_stock - availbility_proyection : 0;
 
 		if (availbility_proyection < security_stock) {
-			const request = batch_size === null ? net_requirement : batch_size;
+			const number_of_baches =
+				batch_size && batch_size < -availbility_proyection
+					? Math.ceil(-availbility_proyection / batch_size)
+					: 1;
+			const request = batch_size === null ? net_requirement : batch_size * number_of_baches;
 			table[i - wait_time_weeks - 1].planned_release_of_the_order = request;
 			availbility_proyection += request;
 		}
