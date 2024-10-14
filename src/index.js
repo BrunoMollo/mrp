@@ -23,18 +23,18 @@
  * @param {Input} input - The input data containing availability, requirements, and other stock-related details.
  * @returns {Output[]} - An array of output objects representing weekly projections and requirements.
  */
-export function processData(input) {
-	const table = [];
+export function processData({
+	weeks,
+	availbility,
+	gross_requirements,
+	programed_recepcions,
+	batch_size,
+	wait_time_weeks,
+	security_stock
+}) {
+	const output = [];
 
-	const {
-		weeks,
-		gross_requirements,
-		programed_recepcions,
-		batch_size,
-		wait_time_weeks,
-		security_stock
-	} = input;
-	let availbility_proyection = input.availbility;
+	let availbility_proyection = availbility;
 
 	for (let i = 1; i <= weeks; i++) {
 		const gross_requirement = gross_requirements[i - 1];
@@ -43,19 +43,18 @@ export function processData(input) {
 		availbility_proyection += programed_recepcion;
 		availbility_proyection -= gross_requirement;
 
-		const net_requirement =
-			availbility_proyection <= security_stock ? security_stock - availbility_proyection : 0;
+		const net_requirement = calculate_net_requirement({ availbility_proyection, security_stock });
 
 		if (availbility_proyection < security_stock) {
-			const number_of_baches =
-				batch_size && batch_size < -availbility_proyection
-					? Math.ceil(-availbility_proyection / batch_size)
-					: 1;
-			const request = batch_size === null ? net_requirement : batch_size * number_of_baches;
-			table[i - wait_time_weeks - 1].planned_release_of_the_order = request;
+			const request = calculate_amount_to_request({
+				availbility_proyection,
+				batch_size,
+				net_requirement
+			});
+			output[i - wait_time_weeks - 1].planned_release_of_the_order = request;
 			availbility_proyection += request;
 		}
-		table.push({
+		output.push({
 			week: i,
 			gross_requirement,
 			programed_recepcion,
@@ -65,5 +64,34 @@ export function processData(input) {
 		});
 	}
 
-	return table;
+	return output;
+}
+
+/**
+ * @param {{availbility_proyection:number, security_stock:number}} input
+ * @returns {number}
+ */
+function calculate_net_requirement({ availbility_proyection, security_stock }) {
+	if (availbility_proyection <= security_stock) {
+		return security_stock - availbility_proyection;
+	}
+	return 0;
+}
+
+/**
+ * @param {{availbility_proyection:number,batch_size:number|null, net_requirement:number}} input
+ * @returns {number}
+ */
+function calculate_amount_to_request({ availbility_proyection, batch_size, net_requirement }) {
+	if (batch_size === null) {
+		return net_requirement;
+	}
+
+	const required_amount = -availbility_proyection;
+	if (batch_size > required_amount) {
+		return batch_size;
+	}
+
+	const number_of_baches = Math.ceil(required_amount / batch_size);
+	return batch_size * number_of_baches;
 }
