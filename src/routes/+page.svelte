@@ -1,2 +1,127 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+	import { process_line, type MasterMaterialLine } from '$lib';
+
+	const material_info: MasterMaterialLine = {
+		element: 'A',
+		availbility: 0,
+		wait_time_weeks: 1,
+		batch_size: null,
+		programed_recepcions: [],
+		security_stock: 0,
+		gross_requirements: []
+	};
+
+	let weeks = 5;
+
+	let table = null;
+
+	let show_result = false;
+</script>
+
+<main class="flex flex-row p-4 gap-6">
+	<section class="w-40">
+		<label for="">Material Name</label>
+		<input class="" type="text" bind:value={material_info.element} />
+		<br />
+
+		<label for="">Current Availbility</label>
+		<input type="number" bind:value={material_info.availbility} />
+		<br />
+
+		<label for="">Leap Time</label>
+		<input type="number" bind:value={material_info.wait_time_weeks} />
+		<br />
+
+		<label for="">Batch Size (leave empty if you can orrder what you need)</label>
+		<input type="number" bind:value={material_info.batch_size} />
+		<br />
+
+		<label for="">Security Stock</label>
+		<input type="number" bind:value={material_info.security_stock} />
+		<br />
+
+		<label for="">Weeks</label>
+		<input type="number" bind:value={weeks} />
+		<br />
+	</section>
+
+	<section class="flex flex-col gap-1">
+		{#each Array(weeks) as _, i}
+			<span class="text-3xl h-16">Semana {i + 1}</span>
+			<input
+				type="text"
+				placeholder="Requeriemeintos Brutos"
+				on:input={(e) => {
+					if (e.target) {
+					}
+					const { value } = e.target;
+					const item = material_info.gross_requirements.find((x) => x.week == i + 1);
+					if (item) {
+						material_info.gross_requirements = material_info.gross_requirements.map((x) => {
+							if (x.week == i + 1) {
+								x.amount = value;
+							}
+							return x;
+						});
+					} else {
+						material_info.gross_requirements = [
+							...material_info.gross_requirements,
+							{ week: i + 1, amount: value }
+						];
+					}
+					material_info.gross_requirements = material_info.gross_requirements;
+				}}
+			/>
+			<input type="text" />
+		{/each}
+	</section>
+
+	<button
+		on:click={() => {
+			table = process_line(material_info, material_info.gross_requirements, weeks);
+			show_result = true;
+		}}
+	>
+		Send
+	</button>
+	{#if show_result}
+		<div class="flex flex-row">
+			<div class="flex flex-col gap-1">
+				<span class="text-3xl h-16">Semana</span>
+				<span class="text-3xl h-16">Requeriemeintos Brutos</span>
+				<span class="text-3xl h-16">Recepciones Programadas</span>
+				<span class="text-3xl h-16">Proyecciones de Disponibilidad</span>
+				<span class="text-3xl h-16">Requerimeintos Netos</span>
+				<span class="text-3xl h-16">Liberacion planificada del Pedido</span>
+			</div>
+
+			{#each table as line}
+				<div class="flex flex-col">
+					<div class="w-20">
+						<input value={line.week} type="number" disabled />
+					</div>
+
+					<div class="w-20">
+						<input type="number" />
+					</div>
+
+					<div class="w-20">
+						<input value={line.programed_recepcions} type="number" disabled />
+					</div>
+
+					<div class="w-20">
+						<input value={line.availbility_proyection} type="number" disabled />
+					</div>
+
+					<div class="w-20">
+						<input value={line.net_requirement} type="number" disabled />
+					</div>
+
+					<div class="w-20">
+						<input value={line.planned_release_of_the_order} type="number" disabled />
+					</div>
+				</div>
+			{/each}
+		</div>
+	{/if}
+</main>

@@ -2,12 +2,13 @@ export type MasterMaterialLine = {
 	element: string;
 	availbility: number;
 	wait_time_weeks: number;
-	batch_size: 'Batch to Batch' | number;
+	batch_size: null | number;
 	programed_recepcions: {
 		week: number;
 		amount: number;
 	}[];
-	security_stock: 0;
+	security_stock: number;
+	gross_requirements: { week: number; amount: number }[];
 };
 
 export type ElemntTableLine = {
@@ -39,7 +40,7 @@ export function process_line(
 		const net_requirement = availbility_proyection < 0 ? -availbility_proyection : 0;
 
 		if (availbility_proyection < 0) {
-			const request = x.batch_size === 'Batch to Batch' ? net_requirement : x.batch_size;
+			const request = x.batch_size === null ? net_requirement : x.batch_size;
 			table[i - x.wait_time_weeks - 1].planned_release_of_the_order = request;
 			availbility_proyection += request;
 		}
