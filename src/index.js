@@ -26,7 +26,14 @@
 export function processData(input) {
 	const table = [];
 
-	const { weeks, gross_requirements, programed_recepcions, batch_size, wait_time_weeks } = input;
+	const {
+		weeks,
+		gross_requirements,
+		programed_recepcions,
+		batch_size,
+		wait_time_weeks,
+		security_stock
+	} = input;
 	let availbility_proyection = input.availbility;
 
 	for (let i = 1; i <= weeks; i++) {
@@ -36,9 +43,10 @@ export function processData(input) {
 		availbility_proyection += programed_recepcion;
 		availbility_proyection -= gross_requirement;
 
-		const net_requirement = availbility_proyection < 0 ? -availbility_proyection : 0;
+		const net_requirement =
+			availbility_proyection < security_stock ? security_stock - availbility_proyection : 0;
 
-		if (availbility_proyection < 0) {
+		if (availbility_proyection < security_stock) {
 			const request = batch_size === null ? net_requirement : batch_size;
 			table[i - wait_time_weeks - 1].planned_release_of_the_order = request;
 			availbility_proyection += request;

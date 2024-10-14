@@ -1,16 +1,16 @@
 import { processData, type Input, type Output } from '../src/index';
 import { describe, expect, test } from 'vitest';
 
-describe('example youtube: B', () => {
+describe('example youtube: C', () => {
 	//Link : https://www.youtube.com/watch?v=oaIsq2NPk_4
 	const input = {
 		weeks: 8,
-		availbility: 40,
+		availbility: 50,
 		wait_time_weeks: 1,
-		batch_size: 500,
+		batch_size: 150,
 		programed_recepcions: [0, 0, 0, 0, 0, 0, 0, 0],
-		gross_requirements: [0, 450, 35, 50, 450, 490, 55, 0],
-		security_stock: 10
+		gross_requirements: [0, 0, 70, 100, 0, 80, 110, 0],
+		security_stock: 0
 	} satisfies Input;
 
 	test('week 1', () => {
@@ -20,9 +20,9 @@ describe('example youtube: B', () => {
 			week: 1,
 			gross_requirement: 0,
 			programed_recepcion: 0,
-			availbility_proyection: 40,
+			availbility_proyection: 50,
 			net_requirement: 0,
-			planned_release_of_the_order: 500
+			planned_release_of_the_order: 0
 		});
 	});
 
@@ -31,11 +31,11 @@ describe('example youtube: B', () => {
 		const week = res.find((x) => x.week === 2);
 		expect(week).toEqual<Output>({
 			week: 2,
-			gross_requirement: 450,
+			gross_requirement: 0,
 			programed_recepcion: 0,
-			availbility_proyection: 90,
-			net_requirement: 420,
-			planned_release_of_the_order: 0
+			availbility_proyection: 50,
+			net_requirement: 0,
+			planned_release_of_the_order: 150
 		});
 	});
 
@@ -44,11 +44,11 @@ describe('example youtube: B', () => {
 		const week = res.find((x) => x.week === 3);
 		expect(week).toEqual<Output>({
 			week: 3,
-			gross_requirement: 35,
+			gross_requirement: 70,
 			programed_recepcion: 0,
-			availbility_proyection: 55,
-			net_requirement: 0,
-			planned_release_of_the_order: 500
+			availbility_proyection: 130,
+			net_requirement: 20,
+			planned_release_of_the_order: 0
 		});
 	});
 
@@ -57,10 +57,10 @@ describe('example youtube: B', () => {
 		const week = res.find((x) => x.week === 4);
 		expect(week).toEqual<Output>({
 			week: 4,
-			gross_requirement: 50,
+			gross_requirement: 100,
 			programed_recepcion: 0,
-			availbility_proyection: 505,
-			net_requirement: 5,
+			availbility_proyection: 30,
+			net_requirement: 0,
 			planned_release_of_the_order: 0
 		});
 	});
@@ -70,11 +70,11 @@ describe('example youtube: B', () => {
 		const week = res.find((x) => x.week === 5);
 		expect(week).toEqual<Output>({
 			week: 5,
-			gross_requirement: 450,
+			gross_requirement: 0,
 			programed_recepcion: 0,
-			availbility_proyection: 55,
+			availbility_proyection: 30,
 			net_requirement: 0,
-			planned_release_of_the_order: 500
+			planned_release_of_the_order: 150
 		});
 	});
 
@@ -83,11 +83,11 @@ describe('example youtube: B', () => {
 		const week = res.find((x) => x.week === 6);
 		expect(week).toEqual<Output>({
 			week: 6,
-			gross_requirement: 490,
+			gross_requirement: 80,
 			programed_recepcion: 0,
-			availbility_proyection: 65,
-			net_requirement: 445,
-			planned_release_of_the_order: 0
+			availbility_proyection: 100,
+			net_requirement: 50,
+			planned_release_of_the_order: 150
 		});
 	});
 
@@ -96,10 +96,10 @@ describe('example youtube: B', () => {
 		const week = res.find((x) => x.week === 7);
 		expect(week).toEqual<Output>({
 			week: 7,
-			gross_requirement: 55,
+			gross_requirement: 110,
 			programed_recepcion: 0,
-			availbility_proyection: 10,
-			net_requirement: 0,
+			availbility_proyection: 140,
+			net_requirement: 10,
 			planned_release_of_the_order: 0
 		});
 	});
@@ -111,7 +111,7 @@ describe('example youtube: B', () => {
 			week: 8,
 			gross_requirement: 0,
 			programed_recepcion: 0,
-			availbility_proyection: 10,
+			availbility_proyection: 140,
 			net_requirement: 0,
 			planned_release_of_the_order: 0
 		});
